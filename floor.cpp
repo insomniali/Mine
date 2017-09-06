@@ -2,6 +2,9 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <graphics.h>
+#include <conio.h>
+
 
 using namespace std;
 
@@ -15,53 +18,95 @@ Lei::~Lei()														//Îö¹¹º¯Êý
 	
 }
 
-void Lei::Set_Lei()
+void Lei::Set_Mine(Cell map[Floor_Row][Floor_Col],int X_Start,int Y_Start)
 {
-							
+	for(int i = 0; i < Floor_Row; i++)
+	{
+		for (int j = 0; j < Floor_Col; j++)
+		{
+			map[i][j].Mine_Num = 0;  
+			map[i][j].Has_Mine = false;
+			map[i][j].Is_Dug = false;
+		}
+
+	}
+
+	srand((unsigned)time(NULL));										//ÉèÖÃËæ»úÊýÖÖ×Ó
+	int count = 0;														//ÉèÖÃµ±Ç°µØÀ×ÊýÁ¿
+	int Mine[Mine_Number];												//ÉèÖÃµØÀ×¼¯£¨40¸öµØÀ×£©
+	while(count < Mine_Number)
+	{
+		if (0 == count)												
+			Mine[0] = rand() % (Floor_Row * Floor_Col);					//ÉèÖÃ0-256µÄËæ»úÊý£¬¹«Ê½°Ù¶ÈÓÐ
+		else
+		{
+			Mine[count] = Mine[count] = rand() % (Floor_Row * Floor_Col);
+		}
+		count++;
+	}
+
+	for(int i = 0; i < Mine_Number; i++)
+	{
+		map[Mine[i] / Floor_Row == 0 ? 0 : Mine[i] / Floor_Row - 1][Mine[i] - 1].Has_Mine = true;		//Ê¹ÓÃÈýÄ¿ÔËËã·û£¬½«µØÀ×Î»ÖÃ¶ÔÓ¦µ½µØÍ¼ÖÐ
+	}
+						
+
+	
+}
+
+
+void Lei::Draw_Floor()											
+{
+	IMAGE cell, none, mine, number;
+	loadimage(&cell,_T("./IMAGE/cell.jpg"));
+	loadimage(&none, _T("./IMAGE/s.jpg"));
+	for(int i = 0;i < Floor_Row; i++)
+	{
+		for (int j = 0; j < Floor_Col; j++)
+		{
+			putimage(i * Picture_Width, j * Picture_Width, &cell);
+			putimage(i * Picture_Width, j * Picture_Width, &none);
+		}
+			
+	}
+
+
+}
+
+
+void Lei::Draw_Text()
+{
+	TCHAR message[] = _T("This is a game about Mine");						//ÒªÊä³öµÄÄÚÈÝ
+	RECT rect = { 250,100,550,200 };										//Êä³ö¾ØÕó·¶Î§
+	LOGFONT font;															//ÉèÖÃ×ÖÌå£¨½á¹¹Ìå£©
+	COLORREF color = RGB(200,128,37);										//ÉèÖÃµ±Ç°×ÖÌåÑÕÉ«
+	setcolor(color);														//ÐÞ¸Äµ±Ç°×ÖÌåÑÕÉ«
+	gettextstyle(&font);													//»ñÈ¡µ±Ç°×ÖÌåÐÅÏ¢
+	font.lfHeight = 22;														//ÉèÖÃµ±Ç°×ÖÌå¸ß¶ÈÎª16
+	font.lfWidth = 0;														//ÉèÖÃµ±Ç°×ÖÌå¿í¶È×ÔÊÊÓ¦
+	font.lfWeight = 400;													//ÉèÖÃµ±Ç°×ÖÌå±Ê»­ÏËÏ¸
+	font.lfItalic = true;													//ÉèÖÃµ±Ç°×ÖÌåÎªÐ±Ìå
+	wcscpy_s(font.lfFaceName, _T("ºÚÌå"));									//ÉèÖÃµ±Ç°×ÖÌåÎªËÎÌå
+	settextstyle(&font);													//Íê³É×ÖÌåÐÞ¸ÄÉèÖÃ
+	drawtext(message, &rect, DT_CENTER | DT_SINGLELINE | DT_VCENTER);		//ÔÚÖ¸¶¨¾ØÐÎ·¶Î§ÄÚ¾ÓÖÐÊä³ö
+}
+
+
+void Lei::Set_Mine() {
 	srand((unsigned)time(NULL));
 	int flag = 0;
-	for (int row = 0; row < 9; row++) {
+	for (int row = 0; row < 16; row++) {
 		int seed = 0;
-		while (flag != 3)
+		while (flag != 4)
 		{
-			seed = rand() % 9;
-			while (mine[row][seed] != 0) {
-				seed = rand() % 9;
+			seed = rand() % 16;
+			while (point[row][seed] != 0) {
+				seed = rand() % 16;
 			}
-			mine[row][seed] = 9;
+			point[row][seed] = 9;
 			flag++;
 		}
 		flag = 0;
-	}
-	return ;
-}
-
-
-void Lei::Draw_Floor()											//´òÓ¡¾Å¹¬¸ñ
-{
-	for(int i = 0; i < 9; i++)
-	{
-		for (int j = 0; j < 9; j++)
-		{
-			cout <<   "¡ö";
-			if (8 == j)
-				cout << endl;
-		}
-	}
-	return;
-}
-
-void Lei::Draw_Num()											//´òÓ¡¾Å¹¬¸ñÊý×Ö£¬¿É¿´µ½Õ¨µ¯Ëù´¦Î»ÖÃ£¬ÓÃÒÔ²âÊÔµÄº¯Êý£¬ºóÆÚÐè×¢ÊÍ£¬»òÓÃÓÚÉè¼Æ×÷±×Ä£Ê½
-{
-	cout << endl<<endl<< endl << endl << endl;
-	for (int i = 0; i < 9; i++)
-	{
-		for (int j = 0; j < 9; j++)
-		{
-			cout << mine[i][j]<<" ";
-			if (8 == j)
-				cout << endl;
-		}
 	}
 	return;
 }
@@ -69,215 +114,215 @@ void Lei::Draw_Num()											//´òÓ¡¾Å¹¬¸ñÊý×Ö£¬¿É¿´µ½Õ¨µ¯Ëù´¦Î»ÖÃ£¬ÓÃÒÔ²âÊÔµÄº
 void Lei::Lei_Travel() {
 	int row = 1, line = 1;
 	int mark = 0;
-	if (mine[0][0] != 9) {                                    //×óÉÏ½Ç
-		if (mine[0][1] == 9)
+	if (point[0][0] != 9) {                                    //×óÉÏ½Ç
+		if (point[0][1] == 9)
 		{
 			mark++;
 		}
-		if (mine[1][1] == 9)
+		if (point[1][1] == 9)
 		{
 			mark++;
 		}
-		if (mine[1][0] == 9)
+		if (point[1][0] == 9)
 		{
 			mark++;
 		}
-		mine[0][0] = mark;
+		point[0][0] = mark;
 		mark = 0;
 	}
-	if (mine[0][8] != 9) {                           //ÓÒÉÏ½Ç
-		if (mine[0][7] == 9)
+	if (point[0][15] != 9) {                           //ÓÒÉÏ½Ç
+		if (point[0][14] == 9)
 		{
 			mark++;
 		}
-		if (mine[1][7] == 9)
+		if (point[1][14] == 9)
 		{
 			mark++;
 		}
-		if (mine[1][8] == 9)
+		if (point[1][15] == 9)
 		{
 			mark++;
 		}
-		mine[0][8] = mark;
-		mark = 0;
-	} 
-	if (mine[8][0] != 9) {                      //×óÏÂ½Ç
-		if (mine[7][0] == 9)
-		{
-			mark++;
-		}
-		if (mine[7][1] == 9)
-		{
-			mark++;
-		}
-		if (mine[8][1] == 9)
-		{
-			mark++;
-		}
-		mine[8][0] = mark;
+		point[0][15] = mark;
 		mark = 0;
 	}
-	if (mine[8][8] != 9) {                      //ÓÒÏÂ½Ç
-		if (mine[7][8] == 9)
+	if (point[15][0] != 9) {                      //×óÏÂ½Ç
+		if (point[14][0] == 9)
 		{
 			mark++;
 		}
-		if (mine[7][7] == 9)
+		if (point[14][1] == 9)
 		{
 			mark++;
 		}
-		if (mine[8][7] == 9)
+		if (point[15][1] == 9)
 		{
 			mark++;
 		}
-		mine[8][8] = mark;
+		point[15][0] = mark;
+		mark = 0;
+	}
+	if (point[15][15] != 9) {                      //ÓÒÏÂ½Ç
+		if (point[14][15] == 9)
+		{
+			mark++;
+		}
+		if (point[14][14] == 9)
+		{
+			mark++;
+		}
+		if (point[15][14] == 9)
+		{
+			mark++;
+		}
+		point[15][15] = mark;
 		mark = 0;
 	}
 	row = 0; line = 1;                                   //µÚÒ»ÐÐ
-	for (; line < 8; line++) {
-		if (mine[row][line] != 9) {                      
-			if (mine[row][line-1] == 9)
+	for (; line < 15; line++) {
+		if (point[row][line] != 9) {
+			if (point[row][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row][line+1] == 9)
+			if (point[row][line + 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row+1][line-1] == 9)
+			if (point[row + 1][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row + 1][line] == 9)
+			if (point[row + 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row + 1][line + 1] == 9)
+			if (point[row + 1][line + 1] == 9)
 			{
 				mark++;
 			}
-			mine[row][line] = mark;
+			point[row][line] = mark;
 			mark = 0;
 		}
 	}
-	row = 8; line = 1;                                   //µÚ¾ÅÐÐ
-	for (; line < 8; line++) {
-		if (mine[row][line] != 9) {
-			if (mine[row][line - 1] == 9)
+	row = 15; line = 1;                                   //µÚ¾ÅÐÐ
+	for (; line < 15; line++) {
+		if (point[row][line] != 9) {
+			if (point[row][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row][line + 1] == 9)
+			if (point[row][line + 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row - 1][line - 1] == 9)
+			if (point[row - 1][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row - 1][line] == 9)
+			if (point[row - 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row - 1][line + 1] == 9)
+			if (point[row - 1][line + 1] == 9)
 			{
 				mark++;
 			}
-			mine[row][line] = mark;
+			point[row][line] = mark;
 			mark = 0;
 		}
 	}
 	row = 1; line = 0;                                   //µÚÒ»ÁÐ
-	for (; row < 8; row++) {
-		if (mine[row][line] != 9) {
-			if (mine[row-1][line] == 9)
+	for (; row < 15; row++) {
+		if (point[row][line] != 9) {
+			if (point[row - 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row+1][line] == 9)
+			if (point[row + 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row + 1][line + 1] == 9)
+			if (point[row + 1][line + 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row][line+1] == 9)
+			if (point[row][line + 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row - 1][line + 1] == 9)
+			if (point[row - 1][line + 1] == 9)
 			{
 				mark++;
 			}
-			mine[row][line] = mark;
+			point[row][line] = mark;
 			mark = 0;
 		}
 	}
-	row = 1; line = 8;                                   //µÚ¾ÅÁÐ
-	for (; row < 8; row++) {
-		if (mine[row][line] != 9) {                      
-			if (mine[row-1][line] == 9)
+	row = 1; line = 15;                                   //µÚ¾ÅÁÐ
+	for (; row < 15; row++) {
+		if (point[row][line] != 9) {
+			if (point[row - 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row+1][line] == 9)
+			if (point[row + 1][line] == 9)
 			{
 				mark++;
 			}
-			if (mine[row-1][line-1] == 9)
+			if (point[row - 1][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row][line-1] == 9)
+			if (point[row][line - 1] == 9)
 			{
 				mark++;
 			}
-			if (mine[row + 1][line - 1] == 9)
+			if (point[row + 1][line - 1] == 9)
 			{
 				mark++;
 			}
-			mine[row][line] = mark;
+			point[row][line] = mark;
 			mark = 0;
 		}
 	}
 	row = 1; line = 1;             //ÄÚ²¿7x7¸ñ×Ó
-	for (; row < 8; row++) {
-		for (; line < 8; line++) {
-			if (mine[row][line] != 9) {
-				if (mine[row - 1][line - 1] == 9)
+	for (; row < 15; row++) {
+		for (; line < 15; line++) {
+			if (point[row][line] != 9) {
+				if (point[row - 1][line - 1] == 9)
 				{
 					mark++;
 				}
-				if (mine[row - 1][line ] == 9)
+				if (point[row - 1][line] == 9)
 				{
 					mark++;
 				}
-				if (mine[row - 1][line + 1] == 9)
+				if (point[row - 1][line + 1] == 9)
 				{
 					mark++;
 				}
-				if (mine[row ][line - 1] == 9)
+				if (point[row][line - 1] == 9)
 				{
 					mark++;
 				}
-				if (mine[row ][line + 1] == 9)
+				if (point[row][line + 1] == 9)
 				{
 					mark++;
 				}
-				if (mine[row + 1][line - 1] == 9)
+				if (point[row + 1][line - 1] == 9)
 				{
 					mark++;
 				}
-				if (mine[row + 1][line ] == 9)
+				if (point[row + 1][line] == 9)
 				{
 					mark++;
 				}
-				if (mine[row + 1][line + 1] == 9)
+				if (point[row + 1][line + 1] == 9)
 				{
 					mark++;
 				}
-				mine[row][line] = mark;
+				point[row][line] = mark;
 				mark = 0;
 			}
 		}
@@ -285,3 +330,4 @@ void Lei::Lei_Travel() {
 	}
 	return;
 }
+
