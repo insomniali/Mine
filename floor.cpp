@@ -18,6 +18,7 @@ Lei::~Lei()														//析构函数
 	
 }
 
+<<<<<<< HEAD
 void Lei::Set_Mine(Cell map[Floor_Row][Floor_Col],int X_Start,int Y_Start)
 {
 	for(int i = 0; i < Floor_Row; i++)
@@ -53,6 +54,42 @@ void Lei::Set_Mine(Cell map[Floor_Row][Floor_Col],int X_Start,int Y_Start)
 
 	
 }
+=======
+//void Lei::Set_Mine()
+//{
+//	for(int i = 0; i < Floor_Row; i++)
+//	{
+//		for (int j = 0; j < Floor_Col; j++)
+//		{
+//			point[i][j].Mine_Num = 0;  
+//			point[i][j].Has_Mine = false;
+//			point[i][j].Is_Dug = false;
+//		}
+//
+//	}
+//	srand((unsigned)time(NULL));										//设置随机数种子
+//	int count = 0;														//设置当前地雷数量
+//	int Mine[Mine_Number];												//设置地雷集（40个地雷）
+//	while(count < Mine_Number)
+//	{
+//		if (0 == count)												
+//			Mine[0] = rand() % (Floor_Row * Floor_Col);					//设置0-256的随机数，公式百度有
+//		else
+//		{
+//			Mine[count] = rand() % (Floor_Row * Floor_Col);
+//		}
+//		count++;
+//	}
+//
+//	for(int i = 0; i < Mine_Number; i++)
+//	{
+//		point[Mine[i] / Floor_Row == 0 ? 0 : Mine[i] / Floor_Row - 1][Mine[i] - 1].Has_Mine = true;		//使用三目运算符，将地雷位置对应到地图中
+//	}
+//						
+//
+//	
+//}
+>>>>>>> version3.0
 
 
 void Lei::Draw_Floor()											
@@ -130,6 +167,7 @@ void Lei::Lei_Travel() {
 		point[0][0] = mark;
 		mark = 0;
 	}
+<<<<<<< HEAD
 	if (point[0][15] != 9) {                           //右上角
 		if (point[0][14] == 9)
 		{
@@ -180,6 +218,58 @@ void Lei::Lei_Travel() {
 	}
 	row = 0; line = 1;                                   //第一行
 	for (; line < 15; line++) {
+=======
+	if (point[0][Floor_Col - 1] != 9) {                           //右上角
+		if (point[0][Floor_Col - 2] == 9)
+		{
+			mark++;
+		}
+		if (point[1][Floor_Col - 2] == 9)
+		{
+			mark++;
+		}
+		if (point[1][Floor_Col - 1] == 9)
+		{
+			mark++;
+		}
+		point[0][Floor_Col - 1] = mark;
+		mark = 0;
+	}
+	if (point[Floor_Row - 1][0] != 9) {                      //左下角
+		if (point[Floor_Row - 2][0] == 9)
+		{
+			mark++;
+		}
+		if (point[Floor_Row - 2][1] == 9)
+		{
+			mark++;
+		}
+		if (point[Floor_Row - 1][1] == 9)
+		{
+			mark++;
+		}
+		point[Floor_Row - 1][0] = mark;
+		mark = 0;
+	}
+	if (point[Floor_Row - 1][Floor_Col - 1] != 9) {                      //右下角
+		if (point[Floor_Row - 2][Floor_Col - 1] == 9)
+		{
+			mark++;
+		}
+		if (point[Floor_Row - 2][Floor_Col - 1] == 9)
+		{
+			mark++;
+		}
+		if (point[Floor_Row - 1][Floor_Col - 1] == 9)
+		{
+			mark++;
+		}
+		point[Floor_Row - 1][Floor_Col - 1] = mark;
+		mark = 0;
+	}
+	row = 0; line = 1;                                   //第一行
+	for (; line < Floor_Col - 1; line++) {
+>>>>>>> version3.0
 		if (point[row][line] != 9) {
 			if (point[row][line - 1] == 9)
 			{
